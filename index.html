@@ -92,6 +92,8 @@
       object-position: center top;
       display: block;
       filter: brightness(0.85);
+      mask-image: linear-gradient(to right, black 60%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, black 60%, transparent 100%);
     }
 
     .hero-text {
@@ -201,6 +203,8 @@
       color: var(--white);
       background: transparent;
       transition: all 0.3s;
+      white-space: nowrap;
+      box-sizing: border-box;
     }
 
     .btn:hover { background: var(--red); }
@@ -369,6 +373,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 2px;
+      max width: 1000px;
     }
 
     .gallery-cell {
@@ -386,7 +391,7 @@
       overflow: hidden;
     }
 
-    .gallery-cell:first-child { grid-column: span 2; aspect-ratio: 16/7; }
+    .gallery-cell:first-child { grid-column: span 2; aspect-ratio: 16/9; max-height: 300px }
     .gallery-cell:hover { border-color: var(--red); }
 
     .gallery-icon { font-size: 2rem; opacity: 0.08; }
