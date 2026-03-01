@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIGFOOT — by Meghan Endres Brown</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0806;
+    --dark: #110e0a;
+    --mid: #1e1810;
+    --cream: #d4c9b0;
+    --warm: #c9a96e;
+    --rust: #8b3a1a;
+    --paper: #e8ddc8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--black);
+    color: var(--cream);
+    font-family: 'EB Garamond', serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.07'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.4;
+  }
+
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    padding: 1.2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom, rgba(10,8,6,0.97), transparent);
+  }
+
+  nav .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.25em;
+    color: var(--warm);
+    text-decoration: none;
+  }
+
+  nav ul { list-style: none; display: flex; gap: 2.5rem; }
+
+  nav ul a {
+    color: var(--cream);
+    text-decoration: none;
+    font-family: 'EB Garamond', serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    transition: opacity 0.3s, color 0.3s;
+  }
+
+  nav ul a:hover { opacity: 1; color: var(--warm); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0 8vw;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 80% at 75% 50%, rgba(139,58,26,0.12) 0%, transparent 70%),
+      linear-gradient(160deg, #0a0806 0%, #1a1208 50%, #0a0806 100%);
+  }
+
+  .footprint {
+    position: absolute;
+    right: 8%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 300px;
+    height: 460px;
+    opacity: 0.06;
+    background: var(--cream);
+    clip-path: ellipse(38% 50% at 50% 50%);
+    filter: blur(3px);
+    animation: breathe 7s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { transform: translateY(-50%) scale(1); opacity: 0.06; }
+    50% { transform: translateY(-50%) scale(1.04); opacity: 0.09; }
+  }
+
+  .hero-content { position: relative; z-index: 2; }
+
+  .hero-byline {
+    font-size: 0.85rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--warm);
+    margin-bottom: 1.2rem;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(8rem, 17vw, 17rem);
+    line-height: 0.88;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+    text-shadow: 0 0 120px rgba(139,58,26,0.3), 0 4px 60px rgba(0,0,0,0.8);
+    opacity: 0;
+    animation: fadeUp 1s ease 0.5s forwards;
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 1.8vw, 1.3rem);
+    font-style: italic;
+    color: var(--cream);
+    opacity: 0;
+    animation: fadeUp 1s ease 0.8s forwards;
+    margin-top: 1.5rem;
+    max-width: 480px;
+    line-height: 1.7;
+  }
+
+  .hero-sub em { color: var(--warm); font-style: normal; }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    animation: fadeIn 1s ease 1.5s forwards;
+    z-index: 2;
+  }
+
+  .scroll-hint span {
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--warm);
+    opacity: 0.6;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 50px;
+    background: linear-gradient(to bottom, var(--warm), transparent);
+    animation: scrollAnim 1.8s ease infinite;
+  }
+
+  @keyframes scrollAnim {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn { to { opacity: 1; } }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--warm), transparent);
+    opacity: 0.25;
+  }
+
+  section { padding: 7rem 8vw; position: relative; }
+
+  .section-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.5em;
+    color: var(--warm);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    color: var(--paper);
+    line-height: 0.9;
+    margin-bottom: 3rem;
+  }
+
+  /* ABOUT */
+  #about { background: var(--dark); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .about-text {
+    font-size: 1.2rem;
+    line-height: 1.85;
+    color: var(--cream);
+    opacity: 0.85;
+  }
+
+  .placeholder-block {
+    background: rgba(201,169,110,0.05);
+    border: 1px dashed rgba(201,169,110,0.25);
+    border-radius: 2px;
+    padding: 2rem;
+    font-style: italic;
+    opacity: 0.5;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--warm);
+  }
+
+  .about-details { display: flex; flex-direction: column; gap: 2rem; }
+
+  .detail-item label {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.3em;
+    font-size: 0.75rem;
+    color: var(--warm);
+    margin-bottom: 0.4rem;
+  }
+
+  .detail-item p {
+    font-size: 1.1rem;
+    color: var(--cream);
+    font-style: italic;
+  }
+
+  /* CAST */
+  #cast { background: var(--black); }
+
+  .cast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2px;
+  }
+
+  .cast-card {
+    background: var(--mid);
+    padding: 2.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.4s;
+  }
+
+  .cast-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 2px;
+    background: var(--warm);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .cast-card:hover { background: #241c12; }
+  .cast-card:hover::before { transform: scaleX(1); }
+
+  .cast-role {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    color: var(--warm);
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+
+  .cast-name {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--paper);
+    margin-bottom: 0.3rem;
+  }
+
+  .cast-actor {
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--cream);
+    opacity: 0.6;
+  }
+
+  .crew-section { margin-top: 5rem; }
+
+  .crew-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .crew-item label {
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.3em;
+    font-size: 0.72rem;
+    color: var(--warm);
+    margin-bottom: 0.3rem;
+  }
+
+  .crew-item p {
+    font-size: 1.05rem;
+    color: var(--cream);
+    opacity: 0.8;
+    font-style: italic;
+  }
+
+  /* TICKETS */
+  #tickets { background: var(--dark); }
+
+  .shows-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 2rem;
+  }
+
+  .show-row {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr 1.2fr auto;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem 2.5rem;
+    background: var(--mid);
+    transition: background 0.3s;
+  }
+
+  .show-row:hover { background: #241c12; }
+
+  .show-date {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: var(--paper);
+    letter-spacing: 0.05em;
+  }
+
+  .show-time {
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--cream);
+    opacity: 0.7;
+  }
+
+  .show-venue {
+    font-size: 1rem;
+    color: var(--cream);
+    opacity: 0.7;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.7rem 1.8rem;
+    border: 1px solid var(--warm);
+    color: var(--warm);
+    text-decoration: none;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.2em;
+    font-size: 0.85rem;
+    transition: background 0.3s, color 0.3s;
+    cursor: pointer;
+    background: transparent;
+    white-space: nowrap;
+  }
+
+  .btn:hover { background: var(--warm); color: var(--black); }
+
+  .ticket-note {
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--cream);
+    opacity: 0.4;
+    margin-top: 1.5rem;
+  }
+
+  /* GALLERY */
+  #gallery { background: var(--black); }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 280px 280px;
+    gap: 4px;
+  }
+
+  .gallery-item {
+    background: var(--mid);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .gallery-item:first-child { grid-row: span 2; }
+
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s ease;
+  }
+
+  .gallery-item:hover img { transform: scale(1.04); }
+
+  .gallery-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    opacity: 0.25;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .gallery-placeholder svg {
+    width: 36px;
+    height: 36px;
+    stroke: var(--warm);
+    fill: none;
+    stroke-width: 1;
+  }
+
+  .gallery-placeholder p {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm);
+  }
+
+  .gallery-note {
+    margin-top: 1.5rem;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--cream);
+    opacity: 0.35;
+    text-align: center;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 4rem 8vw;
+    background: var(--black);
+    border-top: 1px solid rgba(201,169,110,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.1em;
+    color: var(--paper);
+  }
+
+  .footer-sub {
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--cream);
+    opacity: 0.4;
+    margin-top: 0.3rem;
+  }
+
+  .footer-contact {
+    text-align: right;
+    font-size: 0.9rem;
+    color: var(--cream);
+    opacity: 0.45;
+    font-style: italic;
+    line-height: 1.8;
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    nav ul { display: none; }
+    section { padding: 5rem 6vw; }
+    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .show-row { grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+    .gallery-item:first-child { grid-row: span 1; }
+    footer { flex-direction: column; gap: 2rem; text-align: center; }
+    .footer-contact { text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#top" class="logo">BIGFOOT</a>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#cast">Cast &amp; Crew</a></li>
+    <li><a href="#tickets">Tickets</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div id="top">
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="footprint"></div>
+  <div class="hero-content">
+    <p class="hero-byline">A Thesis Production &mdash; Written &amp; Directed by Meghan Endres Brown</p>
+    <h1>BIGFOOT</h1>
+    <p class="hero-sub">
+      <!-- EDIT: Replace with your tagline or a short evocative phrase -->
+      <em>A new drama.</em>
+    </p>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+</div>
+
+<div class="divider"></div>
+
+<!-- ABOUT -->
+<section id="about">
+  <span class="section-label">The Play</span>
+  <h2 class="section-title">About</h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <!--
+        ============================
+        EDIT: Replace the placeholder-block below with your synopsis.
+        Example:
+        <p>BIGFOOT follows a family in the aftermath of...</p>
+        <p>A second paragraph if you want one...</p>
+        ============================
+      -->
+      <div class="placeholder-block">
+        Replace this block with your synopsis. You can write one or two paragraphs here — the story, the themes, what drives the work. An artist's note fits here too.
+      </div>
+    </div>
+    <div class="about-details">
+      <div class="detail-item">
+        <label>Written &amp; Directed by</label>
+        <p>Meghan Endres Brown</p>
+      </div>
+      <div class="detail-item">
+        <label>Genre / Form</label>
+        <!-- EDIT: Change to your actual genre -->
+        <p>[ e.g. Drama / New Work ]</p>
+      </div>
+      <div class="detail-item">
+        <label>Running Time</label>
+        <!-- EDIT: Fill in runtime -->
+        <p>[ Approx. XX minutes ]</p>
+      </div>
+      <div class="detail-item">
+        <label>Content Warnings</label>
+        <!-- EDIT: List your content warnings -->
+        <p>[ e.g. Strong language, depictions of grief ]</p>
+      </div>
+      <div class="detail-item">
+        <label>Contact</label>
+        <!-- EDIT: Your email / social handle -->
+        <p>[ your.email@university.edu ]</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CAST & CREW -->
+<section id="cast">
+  <span class="section-label">The People</span>
+  <h2 class="section-title">Cast &amp; Crew</h2>
+
+  <!--
+    EDIT: Duplicate .cast-card blocks for each cast member.
+    Replace "Character Name" with the character's name
+    and "Actor Name" with the actor's real name.
+  -->
+  <div class="cast-grid">
+    <div class="cast-card">
+      <span class="cast-role">Character</span>
+      <p class="cast-name">[ Character Name ]</p>
+      <p class="cast-actor">[ Actor Name ]</p>
+    </div>
+    <div class="cast-card">
+      <span class="cast-role">Character</span>
+      <p class="cast-name">[ Character Name ]</p>
+      <p class="cast-actor">[ Actor Name ]</p>
+    </div>
+    <div class="cast-card">
+      <span class="cast-role">Character</span>
+      <p class="cast-name">[ Character Name ]</p>
+      <p class="cast-actor">[ Actor Name ]</p>
+    </div>
+    <div class="cast-card">
+      <span class="cast-role">Character</span>
+      <p class="cast-name">[ Character Name ]</p>
+      <p class="cast-actor">[ Actor Name ]</p>
+    </div>
+    <div class="cast-card">
+      <span class="cast-role">Character</span>
+      <p class="cast-name">[ Character Name ]</p>
+      <p class="cast-actor">[ Actor Name ]</p>
+    </div>
+    <div class="cast-card">
+      <span class="cast-role">Character</span>
+      <p class="cast-name">[ Character Name ]</p>
+      <p class="cast-actor">[ Actor Name ]</p>
+    </div>
+  </div>
+
+  <div class="crew-section">
+    <span class="section-label">Creative Team</span>
+    <!--
+      EDIT: Duplicate .crew-item blocks for each crew member.
+      Remove any rows that don't apply to your production.
+    -->
+    <div class="crew-grid">
+      <div class="crew-item">
+        <label>Playwright &amp; Director</label>
+        <p>Meghan Endres Brown</p>
+      </div>
+      <div class="crew-item">
+        <label>Stage Manager</label>
+        <p>[ Name ]</p>
+      </div>
+      <div class="crew-item">
+        <label>Scenic Design</label>
+        <p>[ Name ]</p>
+      </div>
+      <div class="crew-item">
+        <label>Lighting Design</label>
+        <p>[ Name ]</p>
+      </div>
+      <div class="crew-item">
+        <label>Sound Design</label>
+        <p>[ Name ]</p>
+      </div>
+      <div class="crew-item">
+        <label>Costume Design</label>
+        <p>[ Name ]</p>
+      </div>
+      <div class="crew-item">
+        <label>Thesis Advisor</label>
+        <p>[ Name ]</p>
+      </div>
+      <div class="crew-item">
+        <label>Producer</label>
+        <p>[ Name / Institution ]</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SHOW DATES & TICKETS -->
+<section id="tickets">
+  <span class="section-label">See It Live</span>
+  <h2 class="section-title">Show Dates</h2>
+
+  <!--
+    EDIT: Add or remove .show-row blocks for each performance.
+    Update the href on each .btn to your ticketing link (or remove the button
+    and add a note like "Free admission / walk-up only").
+  -->
+  <div class="shows-list">
+    <div class="show-row">
+      <p class="show-date">[ Month DD, YYYY ]</p>
+      <p class="show-time">[ 7:30 PM ]</p>
+      <p class="show-venue">[ Venue Name — City, State ]</p>
+      <a href="#" class="btn">Get Tickets</a>
+    </div>
+    <div class="show-row">
+      <p class="show-date">[ Month DD, YYYY ]</p>
+      <p class="show-time">[ 7:30 PM ]</p>
+      <p class="show-venue">[ Venue Name — City, State ]</p>
+      <a href="#" class="btn">Get Tickets</a>
+    </div>
+    <div class="show-row">
+      <p class="show-date">[ Month DD, YYYY ]</p>
+      <p class="show-time">[ 2:00 PM ]</p>
+      <p class="show-venue">[ Venue Name — City, State ]</p>
+      <a href="#" class="btn">Get Tickets</a>
+    </div>
+  </div>
+
+  <!-- EDIT: Replace with actual ticketing / admission info -->
+  <p class="ticket-note">[ e.g. Admission is free. Reservations recommended. Link a ticketing page or note "Walk-up seating available." ]</p>
+</section>
+
+<div class="divider"></div>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <span class="section-label">Visuals</span>
+  <h2 class="section-title">Gallery</h2>
+
+  <!--
+    EDIT: Replace each .gallery-placeholder div with an <img> tag once you have photos.
+    Example: <img src="photo1.jpg" alt="Production photo">
+    The first cell is taller (spans 2 rows) — great for a hero production shot.
+  -->
+  <div class="gallery-grid">
+    <div class="gallery-item">
+      <div class="gallery-placeholder">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+        <p>Featured Photo</p>
+      </div>
+    </div>
+    <div class="gallery-item">
+      <div class="gallery-placeholder">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+        <p>Photo</p>
+      </div>
+    </div>
+    <div class="gallery-item">
+      <div class="gallery-placeholder">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+        <p>Photo</p>
+      </div>
+    </div>
+    <div class="gallery-item">
+      <div class="gallery-placeholder">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+        <p>Photo</p>
+      </div>
+    </div>
+    <div class="gallery-item">
+      <div class="gallery-placeholder">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+        <p>Photo</p>
+      </div>
+    </div>
+  </div>
+  <p class="gallery-note">[ Replace placeholders with &lt;img src="your-photo.jpg"&gt; tags once you have production photos ]</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <p class="footer-title">BIGFOOT</p>
+    <p class="footer-sub">A thesis production by Meghan Endres Brown</p>
+  </div>
+  <div class="footer-contact">
+    <!-- EDIT: Replace with your contact info -->
+    <p>[ your.email@university.edu ]</p>
+    <p>[ @yourhandle ]</p>
+  </div>
+</footer>
+
+</body>
+</html>
