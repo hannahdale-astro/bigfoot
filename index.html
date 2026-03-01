@@ -1,794 +1,602 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BIGFOOT — by Meghan Endres Brown</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --black: #0a0806;
-    --dark: #110e0a;
-    --mid: #1e1810;
-    --cream: #d4c9b0;
-    --warm: #c9a96e;
-    --rust: #8b3a1a;
-    --paper: #e8ddc8;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-
-  body {
-    background-color: var(--black);
-    color: var(--cream);
-    font-family: 'EB Garamond', serif;
-    overflow-x: hidden;
-    cursor: crosshair;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.07'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 9999;
-    opacity: 0.4;
-  }
-
-  nav {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 100;
-    padding: 1.2rem 3rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(to bottom, rgba(10,8,6,0.97), transparent);
-  }
-
-  nav .logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.4rem;
-    letter-spacing: 0.25em;
-    color: var(--warm);
-    text-decoration: none;
-  }
-
-  nav ul { list-style: none; display: flex; gap: 2.5rem; }
-
-  nav ul a {
-    color: var(--cream);
-    text-decoration: none;
-    font-family: 'EB Garamond', serif;
-    font-size: 0.95rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    opacity: 0.75;
-    transition: opacity 0.3s, color 0.3s;
-  }
-
-  nav ul a:hover { opacity: 1; color: var(--warm); }
-
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 0 8vw;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    background: 
-      radial-gradient(ellipse 60% 80% at 75% 50%, rgba(139,58,26,0.12) 0%, transparent 70%),
-      linear-gradient(160deg, #0a0806 0%, #1a1208 50%, #0a0806 100%);
-  }
-
-  .footprint {
-    position: absolute;
-    right: 8%;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 300px;
-    height: 460px;
-    opacity: 0.06;
-    background: var(--cream);
-    clip-path: ellipse(38% 50% at 50% 50%);
-    filter: blur(3px);
-    animation: breathe 7s ease-in-out infinite;
-  }
-
-  @keyframes breathe {
-    0%, 100% { transform: translateY(-50%) scale(1); opacity: 0.06; }
-    50% { transform: translateY(-50%) scale(1.04); opacity: 0.09; }
-  }
-
-  .hero-content { position: relative; z-index: 2; }
-
-  .hero-byline {
-    font-size: 0.85rem;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: var(--warm);
-    margin-bottom: 1.2rem;
-    opacity: 0;
-    animation: fadeUp 1s ease 0.3s forwards;
-  }
-
-  h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(8rem, 17vw, 17rem);
-    line-height: 0.88;
-    letter-spacing: 0.02em;
-    color: var(--paper);
-    text-shadow: 0 0 120px rgba(139,58,26,0.3), 0 4px 60px rgba(0,0,0,0.8);
-    opacity: 0;
-    animation: fadeUp 1s ease 0.5s forwards;
-  }
-
-  .hero-sub {
-    font-size: clamp(1rem, 1.8vw, 1.3rem);
-    font-style: italic;
-    color: var(--cream);
-    opacity: 0;
-    animation: fadeUp 1s ease 0.8s forwards;
-    margin-top: 1.5rem;
-    max-width: 480px;
-    line-height: 1.7;
-  }
-
-  .hero-sub em { color: var(--warm); font-style: normal; }
-
-  .scroll-hint {
-    position: absolute;
-    bottom: 2.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    opacity: 0;
-    animation: fadeIn 1s ease 1.5s forwards;
-    z-index: 2;
-  }
-
-  .scroll-hint span {
-    font-size: 0.7rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--warm);
-    opacity: 0.6;
-  }
-
-  .scroll-line {
-    width: 1px;
-    height: 50px;
-    background: linear-gradient(to bottom, var(--warm), transparent);
-    animation: scrollAnim 1.8s ease infinite;
-  }
-
-  @keyframes scrollAnim {
-    0% { transform: scaleY(0); transform-origin: top; }
-    50% { transform: scaleY(1); transform-origin: top; }
-    51% { transform: scaleY(1); transform-origin: bottom; }
-    100% { transform: scaleY(0); transform-origin: bottom; }
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes fadeIn { to { opacity: 1; } }
-
-  .divider {
-    width: 100%;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--warm), transparent);
-    opacity: 0.25;
-  }
-
-  section { padding: 7rem 8vw; position: relative; }
-
-  .section-label {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.75rem;
-    letter-spacing: 0.5em;
-    color: var(--warm);
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-    display: block;
-  }
-
-  .section-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(3rem, 6vw, 5.5rem);
-    color: var(--paper);
-    line-height: 0.9;
-    margin-bottom: 3rem;
-  }
-
-  /* ABOUT */
-  #about { background: var(--dark); }
-
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5rem;
-    align-items: start;
-  }
-
-  .about-text {
-    font-size: 1.2rem;
-    line-height: 1.85;
-    color: var(--cream);
-    opacity: 0.85;
-  }
-
-  .placeholder-block {
-    background: rgba(201,169,110,0.05);
-    border: 1px dashed rgba(201,169,110,0.25);
-    border-radius: 2px;
-    padding: 2rem;
-    font-style: italic;
-    opacity: 0.5;
-    font-size: 1rem;
-    line-height: 1.7;
-    color: var(--warm);
-  }
-
-  .about-details { display: flex; flex-direction: column; gap: 2rem; }
-
-  .detail-item label {
-    display: block;
-    font-family: 'Bebas Neue', sans-serif;
-    letter-spacing: 0.3em;
-    font-size: 0.75rem;
-    color: var(--warm);
-    margin-bottom: 0.4rem;
-  }
-
-  .detail-item p {
-    font-size: 1.1rem;
-    color: var(--cream);
-    font-style: italic;
-  }
-
-  /* CAST */
-  #cast { background: var(--black); }
-
-  .cast-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 2px;
-  }
-
-  .cast-card {
-    background: var(--mid);
-    padding: 2.5rem 2rem;
-    position: relative;
-    overflow: hidden;
-    transition: background 0.4s;
-  }
-
-  .cast-card::before {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0;
-    width: 100%; height: 2px;
-    background: var(--warm);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.4s ease;
-  }
-
-  .cast-card:hover { background: #241c12; }
-  .cast-card:hover::before { transform: scaleX(1); }
-
-  .cast-role {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.4em;
-    color: var(--warm);
-    text-transform: uppercase;
-    margin-bottom: 0.6rem;
-    display: block;
-  }
-
-  .cast-name {
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: var(--paper);
-    margin-bottom: 0.3rem;
-  }
-
-  .cast-actor {
-    font-size: 0.95rem;
-    font-style: italic;
-    color: var(--cream);
-    opacity: 0.6;
-  }
-
-  .crew-section { margin-top: 5rem; }
-
-  .crew-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-  }
-
-  .crew-item label {
-    display: block;
-    font-family: 'Bebas Neue', sans-serif;
-    letter-spacing: 0.3em;
-    font-size: 0.72rem;
-    color: var(--warm);
-    margin-bottom: 0.3rem;
-  }
-
-  .crew-item p {
-    font-size: 1.05rem;
-    color: var(--cream);
-    opacity: 0.8;
-    font-style: italic;
-  }
-
-  /* TICKETS */
-  #tickets { background: var(--dark); }
-
-  .shows-list {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    margin-bottom: 2rem;
-  }
-
-  .show-row {
-    display: grid;
-    grid-template-columns: 1.2fr 0.8fr 1.2fr auto;
-    align-items: center;
-    gap: 2rem;
-    padding: 2rem 2.5rem;
-    background: var(--mid);
-    transition: background 0.3s;
-  }
-
-  .show-row:hover { background: #241c12; }
-
-  .show-date {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.5rem;
-    color: var(--paper);
-    letter-spacing: 0.05em;
-  }
-
-  .show-time {
-    font-size: 1rem;
-    font-style: italic;
-    color: var(--cream);
-    opacity: 0.7;
-  }
-
-  .show-venue {
-    font-size: 1rem;
-    color: var(--cream);
-    opacity: 0.7;
-  }
-
-  .btn {
-    display: inline-block;
-    padding: 0.7rem 1.8rem;
-    border: 1px solid var(--warm);
-    color: var(--warm);
-    text-decoration: none;
-    font-family: 'Bebas Neue', sans-serif;
-    letter-spacing: 0.2em;
-    font-size: 0.85rem;
-    transition: background 0.3s, color 0.3s;
-    cursor: pointer;
-    background: transparent;
-    white-space: nowrap;
-  }
-
-  .btn:hover { background: var(--warm); color: var(--black); }
-
-  .ticket-note {
-    font-style: italic;
-    font-size: 0.95rem;
-    color: var(--cream);
-    opacity: 0.4;
-    margin-top: 1.5rem;
-  }
-
-  /* GALLERY */
-  #gallery { background: var(--black); }
-
-  .gallery-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    grid-template-rows: 280px 280px;
-    gap: 4px;
-  }
-
-  .gallery-item {
-    background: var(--mid);
-    overflow: hidden;
-    position: relative;
-  }
-
-  .gallery-item:first-child { grid-row: span 2; }
-
-  .gallery-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.6s ease;
-  }
-
-  .gallery-item:hover img { transform: scale(1.04); }
-
-  .gallery-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    opacity: 0.25;
-    padding: 2rem;
-    text-align: center;
-  }
-
-  .gallery-placeholder svg {
-    width: 36px;
-    height: 36px;
-    stroke: var(--warm);
-    fill: none;
-    stroke-width: 1;
-  }
-
-  .gallery-placeholder p {
-    font-size: 0.75rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--warm);
-  }
-
-  .gallery-note {
-    margin-top: 1.5rem;
-    font-style: italic;
-    font-size: 0.85rem;
-    color: var(--cream);
-    opacity: 0.35;
-    text-align: center;
-  }
-
-  /* FOOTER */
-  footer {
-    padding: 4rem 8vw;
-    background: var(--black);
-    border-top: 1px solid rgba(201,169,110,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .footer-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2rem;
-    letter-spacing: 0.1em;
-    color: var(--paper);
-  }
-
-  .footer-sub {
-    font-style: italic;
-    font-size: 0.9rem;
-    color: var(--cream);
-    opacity: 0.4;
-    margin-top: 0.3rem;
-  }
-
-  .footer-contact {
-    text-align: right;
-    font-size: 0.9rem;
-    color: var(--cream);
-    opacity: 0.45;
-    font-style: italic;
-    line-height: 1.8;
-  }
-
-  @media (max-width: 900px) {
-    nav { padding: 1rem 1.5rem; }
-    nav ul { display: none; }
-    section { padding: 5rem 6vw; }
-    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
-    .show-row { grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
-    .gallery-item:first-child { grid-row: span 1; }
-    footer { flex-direction: column; gap: 2rem; text-align: center; }
-    .footer-contact { text-align: center; }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BIGFOOT — A Play by Meghan Endres Brown</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=IM+Fell+English:ital@0;1&family=Oswald:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black: #050303;
+      --red: #9b1a1a;
+      --red-bright: #c42a2a;
+      --red-dim: #3d0a0a;
+      --white: #e8ddd0;
+      --muted: #5a4a4a;
+      --mid: #8a7070;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'IM Fell English', Georgia, serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 2rem 5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, rgba(5,3,3,0.98) 0%, transparent 100%);
+    }
+
+    .nav-logo {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      letter-spacing: 0.4em;
+      color: var(--red);
+      text-decoration: none;
+    }
+
+    nav ul { list-style: none; display: flex; gap: 3rem; }
+
+    nav a {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 300;
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    nav a:hover { color: var(--white); }
+
+    /* ---- HERO ---- */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-image {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+      filter: brightness(0.85);
+    }
+
+    .hero-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 5rem 5rem 4rem;
+      position: relative;
+    }
+
+    .hero-text::before {
+      content: '';
+      position: absolute;
+      left: -10%;
+      top: 20%;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(ellipse, rgba(155,26,26,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 300;
+      font-size: 0.7rem;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.3s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(4rem, 8vw, 7.5rem);
+      font-weight: 700;
+      line-height: 1;
+      color: var(--white);
+      letter-spacing: 0.08em;
+      opacity: 0;
+      animation: fadeUp 1.2s ease 0.5s forwards;
+    }
+
+    .hero-title .red { color: var(--red-bright); }
+
+    .hero-rule {
+      width: 0;
+      height: 1px;
+      background: var(--red);
+      margin: 2.5rem 0;
+      opacity: 0;
+      animation: expand 1s ease 1s forwards;
+    }
+
+    @keyframes expand {
+      from { width: 0; opacity: 0; }
+      to { width: 3rem; opacity: 1; }
+    }
+
+    .hero-tagline {
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--mid);
+      letter-spacing: 0.05em;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeUp 1s ease 1.1s forwards;
+    }
+
+    .hero-author {
+      margin-top: 3rem;
+      font-family: 'Oswald', sans-serif;
+      font-weight: 300;
+      font-size: 0.75rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0;
+      animation: fadeUp 1s ease 1.3s forwards;
+    }
+
+    .hero-author span { color: var(--white); }
+
+    .hero-cta {
+      margin-top: 3.5rem;
+      opacity: 0;
+      animation: fadeUp 1s ease 1.5s forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.9rem 2.8rem;
+      font-family: 'Oswald', sans-serif;
+      font-weight: 300;
+      font-size: 0.8rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid var(--red);
+      color: var(--white);
+      background: transparent;
+      transition: all 0.3s;
+    }
+
+    .btn:hover { background: var(--red); }
+
+    /* ---- SECTIONS ---- */
+    section { padding: 7rem 5rem; }
+
+    .section-label {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 300;
+      font-size: 0.7rem;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      color: var(--white);
+      letter-spacing: 0.05em;
+      margin-bottom: 3.5rem;
+    }
+
+    .rule {
+      width: 100%;
+      height: 1px;
+      background: var(--red-dim);
+    }
+
+    /* ---- ABOUT ---- */
+    #about {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 8rem;
+      align-items: start;
+    }
+
+    .synopsis-box {
+      border-left: 2px solid var(--red-dim);
+      padding-left: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .synopsis-text {
+      font-size: 1.05rem;
+      line-height: 2;
+      color: var(--mid);
+      font-style: italic;
+    }
+
+    .synopsis-text em {
+      color: var(--white);
+      font-style: normal;
+    }
+
+    .about-meta { display: flex; flex-direction: column; }
+
+    .meta-row {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 1rem;
+      padding: 1.2rem 0;
+      border-bottom: 1px solid var(--red-dim);
+      align-items: baseline;
+    }
+
+    .meta-label {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 300;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--red);
+    }
+
+    .meta-value { font-size: 0.95rem; color: var(--white); }
+
+    /* ---- CAST ---- */
+    #cast { background: #080404; }
+
+    .cast-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1px;
+      background: var(--red-dim);
+      border: 1px solid var(--red-dim);
+    }
+
+    .cast-card {
+      background: #080404;
+      padding: 2rem 1.75rem;
+      transition: background 0.3s;
+    }
+
+    .cast-card:hover { background: #0d0505; }
+
+    .cast-role {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 300;
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 0.6rem;
+    }
+
+    .cast-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 0.3rem;
+    }
+
+    .cast-character { font-size: 0.85rem; color: var(--muted); font-style: italic; }
+
+    /* ---- DATES ---- */
+    #dates { max-width: 900px; }
+
+    .show-list { display: flex; flex-direction: column; }
+
+    .show-item {
+      display: grid;
+      grid-template-columns: 90px 1fr auto;
+      align-items: center;
+      gap: 3rem;
+      padding: 2.5rem 0;
+      border-bottom: 1px solid var(--red-dim);
+    }
+
+    .show-date {
+      font-family: 'Cinzel', serif;
+      font-size: 2.2rem;
+      color: var(--red-bright);
+      line-height: 1;
+    }
+
+    .show-date-month {
+      display: block;
+      font-family: 'Oswald', sans-serif;
+      font-weight: 300;
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    .show-info h3 {
+      font-family: 'Cinzel', serif;
+      font-weight: 400;
+      font-size: 1.1rem;
+      color: var(--white);
+      margin-bottom: 0.3rem;
+    }
+
+    .show-info p { font-size: 0.9rem; color: var(--muted); font-style: italic; }
+
+    /* ---- GALLERY ---- */
+    #gallery { background: #080404; }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .gallery-cell {
+      aspect-ratio: 4/3;
+      background: #0d0505;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      border: 1px solid var(--red-dim);
+      transition: border-color 0.3s;
+      cursor: pointer;
+    }
+
+    .gallery-cell:first-child { grid-column: span 2; aspect-ratio: 16/7; }
+    .gallery-cell:hover { border-color: var(--red); }
+
+    .gallery-icon { font-size: 2rem; opacity: 0.08; }
+
+    .gallery-label {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 300;
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0.5;
+    }
+
+    .placeholder-note {
+      margin-top: 2rem;
+      font-family: 'Oswald', sans-serif;
+      font-weight: 300;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--red);
+      opacity: 0.5;
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      padding: 4rem 5rem;
+      border-top: 1px solid var(--red-dim);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.3em;
+      color: var(--red);
+    }
+
+    footer p {
+      font-family: 'Oswald', sans-serif;
+      font-weight: 300;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 900px) {
+      nav { padding: 1.5rem 2rem; }
+      nav ul { gap: 2rem; }
+      #hero { grid-template-columns: 1fr; }
+      .hero-image { height: 60vh; }
+      .hero-text { padding: 4rem 2rem; }
+      section { padding: 5rem 2rem; }
+      #about { grid-template-columns: 1fr; gap: 3rem; }
+      .show-item { grid-template-columns: 70px 1fr; gap: 1.5rem; }
+      .show-item .btn { display: none; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .gallery-cell:first-child { grid-column: span 2; }
+      footer { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+
+    @media (max-width: 600px) {
+      nav ul { display: none; }
+      .cast-grid { grid-template-columns: 1fr 1fr; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-cell:first-child { grid-column: span 1; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <a href="#top" class="logo">BIGFOOT</a>
-  <ul>
-    <li><a href="#about">About</a></li>
-    <li><a href="#cast">Cast &amp; Crew</a></li>
-    <li><a href="#tickets">Tickets</a></li>
-    <li><a href="#gallery">Gallery</a></li>
-  </ul>
-</nav>
+  <nav>
+    <a class="nav-logo" href="#hero">BIGFOOT</a>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#cast">Cast & Crew</a></li>
+      <li><a href="#dates">Dates</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+    </ul>
+  </nav>
 
-<!-- HERO -->
-<div id="top">
-<section class="hero">
-  <div class="hero-bg"></div>
-  <div class="footprint"></div>
-  <div class="hero-content">
-    <p class="hero-byline">A Thesis Production &mdash; Written &amp; Directed by Meghan Endres Brown</p>
-    <h1>BIGFOOT</h1>
-    <p class="hero-sub">
-      <!-- EDIT: Replace with your tagline or a short evocative phrase -->
-      <em>A new drama.</em>
-    </p>
-  </div>
-  <div class="scroll-hint">
-    <span>Scroll</span>
-    <div class="scroll-line"></div>
-  </div>
-</section>
-</div>
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-image">
+      <img src="IMG_0793.jpeg" alt="Bigfoot — a figure lit in red against darkness" />
+    </div>
+    <div class="hero-text">
+      <div class="hero-eyebrow">A Thesis Production &nbsp;·&nbsp; Drama</div>
+      <h1 class="hero-title">BIG<span class="red">FOOT</span></h1>
+      <div class="hero-rule"></div>
+      <p class="hero-tagline">I believe.</p>
+      <p class="hero-author">Written by <span>Meghan Endres Brown</span></p>
+      <div class="hero-cta">
+        <a href="#dates" class="btn">Get Tickets</a>
+      </div>
+    </div>
+  </section>
 
-<div class="divider"></div>
+  <!-- ABOUT -->
+  <section id="about">
+    <div>
+      <div class="section-label">The Play</div>
+      <h2 class="section-title">About Bigfoot</h2>
+      <div class="synopsis-box">
+        <p class="synopsis-text">
+          <em>[ Add your synopsis here. ]</em><br><br>
+          Paste your play description here. A few sentences about the world, the characters, the stakes — what draws someone into this story before they step through the door.
+        </p>
+      </div>
+      <p class="placeholder-note">→ Replace the text above with your synopsis.</p>
+    </div>
 
-<!-- ABOUT -->
-<section id="about">
-  <span class="section-label">The Play</span>
-  <h2 class="section-title">About</h2>
-  <div class="about-grid">
-    <div class="about-text">
-      <!--
-        ============================
-        EDIT: Replace the placeholder-block below with your synopsis.
-        Example:
-        <p>BIGFOOT follows a family in the aftermath of...</p>
-        <p>A second paragraph if you want one...</p>
-        ============================
-      -->
-      <div class="placeholder-block">
-        Replace this block with your synopsis. You can write one or two paragraphs here — the story, the themes, what drives the work. An artist's note fits here too.
+    <div>
+      <div class="section-label">Details</div>
+      <div class="about-meta">
+        <div class="meta-row">
+          <span class="meta-label">Written by</span>
+          <span class="meta-value">Meghan Endres Brown</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Genre</span>
+          <span class="meta-value">Drama</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Venue</span>
+          <span class="meta-value">[Your Venue]</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Runtime</span>
+          <span class="meta-value">[Runtime]</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Directed by</span>
+          <span class="meta-value">[Director Name]</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Produced by</span>
+          <span class="meta-value">[Program / School]</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Content</span>
+          <span class="meta-value">[Content Warnings]</span>
+        </div>
       </div>
     </div>
-    <div class="about-details">
-      <div class="detail-item">
-        <label>Written &amp; Directed by</label>
-        <p>Meghan Endres Brown</p>
-      </div>
-      <div class="detail-item">
-        <label>Genre / Form</label>
-        <!-- EDIT: Change to your actual genre -->
-        <p>[ e.g. Drama / New Work ]</p>
-      </div>
-      <div class="detail-item">
-        <label>Running Time</label>
-        <!-- EDIT: Fill in runtime -->
-        <p>[ Approx. XX minutes ]</p>
-      </div>
-      <div class="detail-item">
-        <label>Content Warnings</label>
-        <!-- EDIT: List your content warnings -->
-        <p>[ e.g. Strong language, depictions of grief ]</p>
-      </div>
-      <div class="detail-item">
-        <label>Contact</label>
-        <!-- EDIT: Your email / social handle -->
-        <p>[ your.email@university.edu ]</p>
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
 
-<div class="divider"></div>
+  <div class="rule" style="margin: 0 5rem;"></div>
 
-<!-- CAST & CREW -->
-<section id="cast">
-  <span class="section-label">The People</span>
-  <h2 class="section-title">Cast &amp; Crew</h2>
+  <!-- CAST -->
+  <section id="cast">
+    <div class="section-label">The Company</div>
+    <h2 class="section-title">Cast &amp; Crew</h2>
+    <div class="cast-grid">
+      <div class="cast-card"><div class="cast-role">Cast</div><div class="cast-name">[Actor Name]</div><div class="cast-character">[Character]</div></div>
+      <div class="cast-card"><div class="cast-role">Cast</div><div class="cast-name">[Actor Name]</div><div class="cast-character">[Character]</div></div>
+      <div class="cast-card"><div class="cast-role">Cast</div><div class="cast-name">[Actor Name]</div><div class="cast-character">[Character]</div></div>
+      <div class="cast-card"><div class="cast-role">Cast</div><div class="cast-name">[Actor Name]</div><div class="cast-character">[Character]</div></div>
+      <div class="cast-card"><div class="cast-role">Director</div><div class="cast-name">[Director Name]</div><div class="cast-character">Direction</div></div>
+      <div class="cast-card"><div class="cast-role">Stage Manager</div><div class="cast-name">[Stage Manager]</div><div class="cast-character">Production</div></div>
+      <div class="cast-card"><div class="cast-role">Scenic Design</div><div class="cast-name">[Designer Name]</div><div class="cast-character">Design</div></div>
+      <div class="cast-card"><div class="cast-role">Lighting Design</div><div class="cast-name">[Designer Name]</div><div class="cast-character">Design</div></div>
+    </div>
+    <p class="placeholder-note">→ Replace bracketed names with your actual cast and crew.</p>
+  </section>
 
-  <!--
-    EDIT: Duplicate .cast-card blocks for each cast member.
-    Replace "Character Name" with the character's name
-    and "Actor Name" with the actor's real name.
-  -->
-  <div class="cast-grid">
-    <div class="cast-card">
-      <span class="cast-role">Character</span>
-      <p class="cast-name">[ Character Name ]</p>
-      <p class="cast-actor">[ Actor Name ]</p>
+  <!-- DATES -->
+  <section id="dates">
+    <div class="section-label">Performances</div>
+    <h2 class="section-title">Show Dates &amp; Tickets</h2>
+    <div class="show-list">
+      <div class="show-item">
+        <div class="show-date">00<span class="show-date-month">[Month]</span></div>
+        <div class="show-info"><h3>[Venue Name]</h3><p>[City, State] · 7:30 PM</p></div>
+        <a href="#" class="btn">Tickets</a>
+      </div>
+      <div class="show-item">
+        <div class="show-date">00<span class="show-date-month">[Month]</span></div>
+        <div class="show-info"><h3>[Venue Name]</h3><p>[City, State] · 2:00 PM · Matinee</p></div>
+        <a href="#" class="btn">Tickets</a>
+      </div>
+      <div class="show-item">
+        <div class="show-date">00<span class="show-date-month">[Month]</span></div>
+        <div class="show-info"><h3>[Venue Name]</h3><p>[City, State] · 7:30 PM</p></div>
+        <a href="#" class="btn">Tickets</a>
+      </div>
     </div>
-    <div class="cast-card">
-      <span class="cast-role">Character</span>
-      <p class="cast-name">[ Character Name ]</p>
-      <p class="cast-actor">[ Actor Name ]</p>
-    </div>
-    <div class="cast-card">
-      <span class="cast-role">Character</span>
-      <p class="cast-name">[ Character Name ]</p>
-      <p class="cast-actor">[ Actor Name ]</p>
-    </div>
-    <div class="cast-card">
-      <span class="cast-role">Character</span>
-      <p class="cast-name">[ Character Name ]</p>
-      <p class="cast-actor">[ Actor Name ]</p>
-    </div>
-    <div class="cast-card">
-      <span class="cast-role">Character</span>
-      <p class="cast-name">[ Character Name ]</p>
-      <p class="cast-actor">[ Actor Name ]</p>
-    </div>
-    <div class="cast-card">
-      <span class="cast-role">Character</span>
-      <p class="cast-name">[ Character Name ]</p>
-      <p class="cast-actor">[ Actor Name ]</p>
-    </div>
-  </div>
+    <p class="placeholder-note">→ Replace dates, venues, and ticket links with your show info.</p>
+  </section>
 
-  <div class="crew-section">
-    <span class="section-label">Creative Team</span>
-    <!--
-      EDIT: Duplicate .crew-item blocks for each crew member.
-      Remove any rows that don't apply to your production.
-    -->
-    <div class="crew-grid">
-      <div class="crew-item">
-        <label>Playwright &amp; Director</label>
-        <p>Meghan Endres Brown</p>
-      </div>
-      <div class="crew-item">
-        <label>Stage Manager</label>
-        <p>[ Name ]</p>
-      </div>
-      <div class="crew-item">
-        <label>Scenic Design</label>
-        <p>[ Name ]</p>
-      </div>
-      <div class="crew-item">
-        <label>Lighting Design</label>
-        <p>[ Name ]</p>
-      </div>
-      <div class="crew-item">
-        <label>Sound Design</label>
-        <p>[ Name ]</p>
-      </div>
-      <div class="crew-item">
-        <label>Costume Design</label>
-        <p>[ Name ]</p>
-      </div>
-      <div class="crew-item">
-        <label>Thesis Advisor</label>
-        <p>[ Name ]</p>
-      </div>
-      <div class="crew-item">
-        <label>Producer</label>
-        <p>[ Name / Institution ]</p>
-      </div>
+  <!-- GALLERY -->
+  <section id="gallery">
+    <div class="section-label">Gallery</div>
+    <h2 class="section-title">Photos</h2>
+    <div class="gallery-grid">
+      <div class="gallery-cell"><div class="gallery-icon">📷</div><div class="gallery-label">Production Photo</div></div>
+      <div class="gallery-cell"><div class="gallery-icon">📷</div><div class="gallery-label">Production Photo</div></div>
+      <div class="gallery-cell"><div class="gallery-icon">📷</div><div class="gallery-label">Production Photo</div></div>
+      <div class="gallery-cell"><div class="gallery-icon">📷</div><div class="gallery-label">Production Photo</div></div>
     </div>
-  </div>
-</section>
+    <p class="placeholder-note">→ Replace placeholders with your production images.</p>
+  </section>
 
-<div class="divider"></div>
-
-<!-- SHOW DATES & TICKETS -->
-<section id="tickets">
-  <span class="section-label">See It Live</span>
-  <h2 class="section-title">Show Dates</h2>
-
-  <!--
-    EDIT: Add or remove .show-row blocks for each performance.
-    Update the href on each .btn to your ticketing link (or remove the button
-    and add a note like "Free admission / walk-up only").
-  -->
-  <div class="shows-list">
-    <div class="show-row">
-      <p class="show-date">[ Month DD, YYYY ]</p>
-      <p class="show-time">[ 7:30 PM ]</p>
-      <p class="show-venue">[ Venue Name — City, State ]</p>
-      <a href="#" class="btn">Get Tickets</a>
-    </div>
-    <div class="show-row">
-      <p class="show-date">[ Month DD, YYYY ]</p>
-      <p class="show-time">[ 7:30 PM ]</p>
-      <p class="show-venue">[ Venue Name — City, State ]</p>
-      <a href="#" class="btn">Get Tickets</a>
-    </div>
-    <div class="show-row">
-      <p class="show-date">[ Month DD, YYYY ]</p>
-      <p class="show-time">[ 2:00 PM ]</p>
-      <p class="show-venue">[ Venue Name — City, State ]</p>
-      <a href="#" class="btn">Get Tickets</a>
-    </div>
-  </div>
-
-  <!-- EDIT: Replace with actual ticketing / admission info -->
-  <p class="ticket-note">[ e.g. Admission is free. Reservations recommended. Link a ticketing page or note "Walk-up seating available." ]</p>
-</section>
-
-<div class="divider"></div>
-
-<!-- GALLERY -->
-<section id="gallery">
-  <span class="section-label">Visuals</span>
-  <h2 class="section-title">Gallery</h2>
-
-  <!--
-    EDIT: Replace each .gallery-placeholder div with an <img> tag once you have photos.
-    Example: <img src="photo1.jpg" alt="Production photo">
-    The first cell is taller (spans 2 rows) — great for a hero production shot.
-  -->
-  <div class="gallery-grid">
-    <div class="gallery-item">
-      <div class="gallery-placeholder">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
-        <p>Featured Photo</p>
-      </div>
-    </div>
-    <div class="gallery-item">
-      <div class="gallery-placeholder">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
-        <p>Photo</p>
-      </div>
-    </div>
-    <div class="gallery-item">
-      <div class="gallery-placeholder">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
-        <p>Photo</p>
-      </div>
-    </div>
-    <div class="gallery-item">
-      <div class="gallery-placeholder">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
-        <p>Photo</p>
-      </div>
-    </div>
-    <div class="gallery-item">
-      <div class="gallery-placeholder">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
-        <p>Photo</p>
-      </div>
-    </div>
-  </div>
-  <p class="gallery-note">[ Replace placeholders with &lt;img src="your-photo.jpg"&gt; tags once you have production photos ]</p>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div>
-    <p class="footer-title">BIGFOOT</p>
-    <p class="footer-sub">A thesis production by Meghan Endres Brown</p>
-  </div>
-  <div class="footer-contact">
-    <!-- EDIT: Replace with your contact info -->
-    <p>[ your.email@university.edu ]</p>
-    <p>[ @yourhandle ]</p>
-  </div>
-</footer>
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-title">BIGFOOT</div>
+    <p>A thesis production by Meghan Endres Brown &nbsp;·&nbsp; &copy; 2025</p>
+  </footer>
 
 </body>
 </html>
